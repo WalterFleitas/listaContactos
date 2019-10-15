@@ -1,6 +1,9 @@
 // objeto de acceso a datos
 const persistence = new Persistence();
 
+let esNuevo = true;
+let indice = -1;
+
 
 // MENU
 // selecciona el menu y agrega un evento click con una funcion que maneja la logica del menu
@@ -32,7 +35,13 @@ $("form").submit(function( evento ){
 		direccion: $("#direccion").val()
 	};
 
-	persistence.guardar(persona);
+	if(esNuevo){
+	 persistence.guardar( persona );
+	} else {
+		persistence.modificar( persona, indice );
+	}
+
+
 	
 	// limpia el formulario
 	$('#btnCancelar').click();
@@ -41,6 +50,33 @@ $("form").submit(function( evento ){
 	cargarTabla();
 
 } );
+
+// modifica el valor de esNuevo a true
+$('#btnCancelar').click(function(event) {
+	esNuevo = true;
+} );
+
+
+function editar(btn){
+	esNuevo = false;
+	indice = $(btn).parent().parent().index();
+	let contacto = persistence.recuperarPorIndice( indice );
+
+	$("#nombre").val(contacto.nombre);
+	$("#telefono").val(contacto.telefono);
+	$("#email").val(contacto.email);
+	$("#direccion").val(contacto.direccion);
+
+	$("#reg").click();
+
+}
+
+function eliminar(btn) {
+	 indice =  $(btn).parent().parent().index() 
+	 persistence.eliminar(indice);
+	 cargarTabla();
+
+}
 
 
 
@@ -71,11 +107,11 @@ function cargarTabla(){
                                     <td>${ elem.email }</td>
                                     <td>${ elem.direccion }</td>
                                     <td>
-                                        <button onclick="" class="bnt btn-outline-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Editar">
+                                        <button onclick="editar(this)" class="bnt btn-outline-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Editar">
                                         <i class="fas fa-edit"></i>
                                         </button>
                                      
-                                        <button onclick="" class="bnt btn-outline-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Eliminar">
+                                        <button onclick="eliminar(this)" class="bnt btn-outline-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Eliminar">
                                         <i class="fas fa-eraser"></i>
                                         </button>
                                    
